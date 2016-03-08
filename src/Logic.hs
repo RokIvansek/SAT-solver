@@ -17,8 +17,8 @@ simplify (Equiv p q) = Equiv (simplify p) (simplify q)
 simplify p = p
 
 eval :: LogicalFormula -> [(String, Bool)] -> Bool
-eval Tru values = True
-eval Fls values = False
+eval Tru _ = True
+eval Fls _ = False
 eval (Lit name) values = case lookup name values of
                               Just v -> v
                               Nothing -> error ("No value for atom " ++ name)

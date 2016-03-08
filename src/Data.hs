@@ -11,6 +11,7 @@ data LogicalFormula = Tru
                     | Or [LogicalFormula]
                     | Implies LogicalFormula LogicalFormula
                     | Equiv LogicalFormula LogicalFormula
+                    deriving (Eq)
 
 instance Show LogicalFormula where
   show Tru = "T"
