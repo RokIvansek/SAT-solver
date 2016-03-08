@@ -15,9 +15,9 @@ data LogicalFormula = Tru
 instance Show LogicalFormula where
   show Tru = "T"
   show Fls = "F"
-  show (Lit p) = p
-  show (Not p) = "¬(" ++ show p ++ ")"
-  show (And ps) = intercalate " ∧ " $ map show ps
-  show (Or ps) = intercalate " ∨ " $ map show ps
+  show (Lit name) = name
+  show (Not p) = "¬" ++ show p
+  show (And ps) = "(" ++ intercalate " ∧ " (map show ps) ++ ")"
+  show (Or ps) = "(" ++ intercalate " ∨ " (map show ps) ++ ")"
   show (Implies p q) = "(" ++ show p ++ " => " ++ show q ++ ")"
   show (Equiv p q) = "(" ++ show p ++ " <=> " ++ show q ++ ")"
