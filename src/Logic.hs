@@ -7,6 +7,8 @@ simplify :: LogicalFormula -> LogicalFormula
 simplify (Not (And ps)) = Or $ map (simplify . Not) ps
 simplify (Not (Or ps)) = And $ map (simplify . Not) ps
 simplify (Not (Not p)) = p
+simplify (Not Tru) = Fls
+simplify (Not Fls) = Tru
 simplify (Not p) = Not (simplify p)
 simplify (And ps) = And $ map simplify ps
 simplify (Or ps) = Or $ map simplify ps
