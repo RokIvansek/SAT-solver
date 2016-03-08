@@ -24,5 +24,6 @@ eval (Lit name) values = case lookup name values of
                               Nothing -> error ("No value for atom " ++ name)
 eval (Not p) values = not $ eval p values
 eval (And ps) values = all id $ map (flip eval values) ps
+eval (Or ps) values = any id $ map (flip eval values) ps
 eval (Implies p q) values = eval (Or [Not p, q]) values
 eval (Equiv p q) values = eval (And [Implies p q, Implies q p]) values
