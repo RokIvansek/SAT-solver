@@ -1,6 +1,6 @@
-module Logic where
+module SATSolver.Logic where
 
-import Data
+import SATSolver.Data
 
 
 simplify :: LogicalFormula -> LogicalFormula

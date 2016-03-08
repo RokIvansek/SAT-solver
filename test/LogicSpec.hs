@@ -1,8 +1,8 @@
 module LogicSpec where
 
 import Test.Hspec
-import Data
-import Logic
+import SATSolver.Data
+import SATSolver.Logic
 
 main :: IO ()
 main = hspec spec

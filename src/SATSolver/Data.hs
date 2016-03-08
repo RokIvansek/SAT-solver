@@ -1,4 +1,4 @@
-module Data where
+module SATSolver.Data where
 
 import Data.List (intercalate)
 
