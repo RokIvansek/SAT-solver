@@ -1,5 +1,9 @@
-module SATSolver where
+module SATSolver
+(
+  module SS
+)
+where
 
-import SATSolver.Data
-import SATSolver.Logic
-import SATSolver.Dimacs
+import SATSolver.Data as SS
+import SATSolver.Logic as SS
+import SATSolver.Dimacs as SS

@@ -1,4 +1,8 @@
-module SATSolver.Dimacs where
+module SATSolver.Dimacs
+(
+  readDimacs
+)
+where
 
 import SATSolver.Data
 import Data.List()

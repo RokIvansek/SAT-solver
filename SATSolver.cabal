@@ -18,6 +18,7 @@ Library
   Exposed-Modules:     SATSolver
   Other-Modules:       SATSolver.Data
                      , SATSolver.Logic
+                     , SATSolver.Dimacs
   build-depends:       base >=4.6 && <4.8, hspec >=2.2 && <2.3, QuickCheck >=2.8 && <2.9
   hs-source-dirs:      src
   GHC-Options:         -Wall

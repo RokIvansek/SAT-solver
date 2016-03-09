@@ -1,4 +1,9 @@
-module SATSolver.Logic where
+module SATSolver.Logic
+(
+  simplify
+, eval
+)
+where
 
 import SATSolver.Data
 

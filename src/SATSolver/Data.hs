@@ -1,4 +1,8 @@
-module SATSolver.Data where
+module SATSolver.Data
+(
+  LogicalFormula (..)
+)
+where
 
 import Data.List (intercalate)
 
