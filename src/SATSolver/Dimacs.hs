@@ -1,11 +1,18 @@
 module SATSolver.Dimacs
 (
-  readDimacs
+  Dimacs (..)
+, readDimacs
 )
 where
 
 import SATSolver.Data
 import Data.List()
+
+data Dimacs = Dimacs { comments :: [String]
+                     , nbvar :: Integer
+                     , nbclauses :: Integer
+                     , cnf :: LogicalFormula
+                     } deriving (Show)
 
 removeMarkers :: [String] -> [String]
 removeMarkers = filter (not . null) . map tail
@@ -31,13 +38,13 @@ parseClause s = Or $ map parseAtom $ init $ words s
 parseClauses :: [String] -> LogicalFormula
 parseClauses s = And $ map parseClause s
 
-readDimacs :: String -> IO ([String], (Integer, Integer), LogicalFormula)
+readDimacs :: String -> IO Dimacs
 readDimacs filename = do
   text <- readFile filename
   let ls = lines text
-      comments = extractComments ls
-      (filetype:nbvar:nbclauses:_) = extractDescription ls
-      cnf = parseClauses $ extractClauses ls
+      comments' = extractComments ls
+      (filetype:nbvar':nbclauses':_) = extractDescription ls
+      cnf' = parseClauses $ extractClauses ls
    in if filetype /= "cnf"
       then error "Not a cnf dimacs file!"
-      else return (comments, (read nbvar, read nbclauses), cnf)
+      else return Dimacs {comments=comments', nbvar=read nbvar', nbclauses=read nbclauses', cnf=cnf'}
