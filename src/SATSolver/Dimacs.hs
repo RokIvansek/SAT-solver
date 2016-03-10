@@ -26,13 +26,8 @@ extractDescription = words . head . removeMarkers . filter (('p' ==) . head)
 extractClauses :: [String] -> [String]
 extractClauses = filter (\l -> head l /= 'c' && head l /= 'p')
 
-parseAtom :: String -> Literal
-parseAtom atom = if head atom == '-'
-                 then NegLit (tail atom)
-                 else PosLit atom
-
 parseClause :: String -> Clause
-parseClause = map parseAtom . init . words
+parseClause = map readLiteral . init . words
 
 parseClauses :: [String] -> CNF
 parseClauses = map parseClause

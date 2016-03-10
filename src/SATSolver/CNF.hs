@@ -4,7 +4,10 @@ module SATSolver.CNF
 , Clause
 , CNF
 , showCNF
+, showLiteral
+, readLiteral
 , negateLit
+, checkSolution
 )
 where
 
@@ -32,6 +35,20 @@ showClause literals = "(" ++ intercalate " ∨ " (map showLiteral literals) ++ "
 showCNF :: CNF -> String
 showCNF clauses = "[" ++ intercalate " ∧ " (map showClause clauses) ++ "]"
 
+readLiteral :: String -> Literal
+readLiteral atom = if head atom == '-'
+                   then NegLit (tail atom)
+                   else PosLit atom
+
+
 negateLit :: Literal -> Literal
 negateLit (PosLit name) = NegLit name
 negateLit (NegLit name) = PosLit name
+
+
+checkClause :: Clause -> [Literal] -> Bool
+checkClause literals values = any (`elem` values) literals -- TODO: should we check if a literal even exists in the values (as either positive or negative)?
+
+checkSolution :: CNF -> [Literal] -> Bool
+checkSolution clauses values = all (`checkClause` values) clauses
+
