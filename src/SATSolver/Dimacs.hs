@@ -5,13 +5,13 @@ module SATSolver.Dimacs
 )
 where
 
-import SATSolver.Data
+import SATSolver.CNF
 import Data.List()
 
 data Dimacs = Dimacs { comments :: [String]
                      , nbvar :: Integer
                      , nbclauses :: Integer
-                     , cnf :: LogicalFormula
+                     , cnf :: CNF
                      } deriving (Show)
 
 removeMarkers :: [String] -> [String]
@@ -26,17 +26,16 @@ extractDescription = words . head . removeMarkers . filter (('p' ==) . head)
 extractClauses :: [String] -> [String]
 extractClauses = filter (\l -> head l /= 'c' && head l /= 'p')
 
-parseAtom :: String -> LogicalFormula
-parseAtom s = let atom = read s :: Integer
-               in if atom < 0
-                  then Not (Lit (show (abs atom :: Integer)))
-                  else Lit (show (abs atom :: Integer))
+parseAtom :: String -> Literal
+parseAtom atom = if head atom == '-'
+                 then NegLit (tail atom)
+                 else PosLit atom
 
-parseClause :: String -> LogicalFormula
-parseClause s = Or $ map parseAtom $ init $ words s
+parseClause :: String -> Clause
+parseClause = map parseAtom . init . words
 
-parseClauses :: [String] -> LogicalFormula
-parseClauses s = And $ map parseClause s
+parseClauses :: [String] -> CNF
+parseClauses = map parseClause
 
 readDimacs :: String -> IO Dimacs
 readDimacs filename = do

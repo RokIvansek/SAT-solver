@@ -2,13 +2,14 @@ module Main where
 
 import System.Environment
 import SATSolver
+import Data.List (intercalate)
 
-
-solve :: Dimacs -> Bool
-solve (Dimacs {cnf=f}) = eval f [("1", True), ("5", False), ("3", True), ("4", False)]
 
 main :: IO ()
 main = do 
    (filename:_) <- getArgs
    d <- readDimacs filename
-   putStrLn (show $ solve d)
+   putStrLn $ "Solving for " ++ showCNF (cnf d)
+   case solveDimacs d of
+        Just solution -> putStrLn $ intercalate " " (map show solution)
+        Nothing -> putStrLn "No solution"
