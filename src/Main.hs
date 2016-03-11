@@ -7,7 +7,7 @@ import SATSolver
 readSolution :: String -> IO [Literal]
 readSolution filename = do
   text <- readFile filename
-  return (map readLiteral $ words text)
+  return (map readLiteral $ words text) -- TODO: check that all literals are covered and no literal appears more than once
 
 showHelp :: IO ()
 showHelp = putStrLn "Usage: SATSolver [path/to/dimacs/] {[path/to/solution/]}"
@@ -15,7 +15,7 @@ showHelp = putStrLn "Usage: SATSolver [path/to/dimacs/] {[path/to/solution/]}"
 solveDimacs :: String -> IO ()
 solveDimacs fndimacs = do
    d <- readDimacs fndimacs
-   putStrLn $ "Solving " ++ showCNF (cnf d)
+   -- putStrLn $ "Solving " ++ showCNF (cnf d)
    case solve (cnf d) of
         Just solution -> putStrLn $ unwords $ map show solution
         Nothing -> putStrLn "No solution"
