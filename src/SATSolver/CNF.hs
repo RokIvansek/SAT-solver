@@ -16,7 +16,7 @@ import Data.List (intercalate)
 
 data Literal = PosLit String
              | NegLit String
-             deriving (Eq)
+             deriving (Eq, Ord)
 type Clause = [Literal]
 type CNF = [Clause]
 

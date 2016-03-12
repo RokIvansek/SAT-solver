@@ -7,6 +7,10 @@ where
 import SATSolver.CNF
 import Data.List (delete, find)
 import Data.Maybe (mapMaybe, fromJust)
+import Data.Set (toList, fromList)
+
+removeDuplicates :: Ord a => [a] -> [a]
+removeDuplicates = toList . fromList
 
 findUnitClauses :: CNF -> [Literal]
 findUnitClauses = map head . filter (\c -> length c == 1)
@@ -22,7 +26,7 @@ removeLiteral l c
 
 simplifyCNF :: CNF -> ([Literal], CNF)
 simplifyCNF phi = simplifyCNF' phi []
-  where simplifyCNF' phi' vals = let units = findUnitClauses phi'
+  where simplifyCNF' phi' vals = let units = removeDuplicates $ findUnitClauses phi'
                                  in if null units
                                     then (vals, phi')
                                     else let vals' = units ++ vals
