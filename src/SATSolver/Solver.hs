@@ -38,12 +38,14 @@ randLiteral = head . fromJust . find (not . null)
 
 
 solve :: CNF -> Maybe [Literal]
-solve phi = let (vals, phi') = simplifyCNF phi
+solve phi = let (vals', phi') = simplifyCNF phi
              in if null phi'
-                then Just vals
+                then Just vals'
                 else if [] `elem` phi'
                 then Nothing
                 else let p = randLiteral phi'
                       in case solve ([p]:phi') of
-                              Just vals' -> Just vals'
-                              Nothing -> solve ([negateLit p]:phi')
+                              Just vals'' -> Just $ vals' ++ vals''
+                              Nothing -> case solve ([negateLit p]:phi') of
+                                              Just vals'' -> Just $ vals' ++ vals''
+                                              Nothing -> Nothing
