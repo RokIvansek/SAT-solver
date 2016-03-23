@@ -1,7 +1,12 @@
 module SATSolver.Solver
-(
-  solve
-)
+--(
+--  solve,
+--  findPureLiterals,
+--  simplifyCNF,
+--  removeLiteral,
+--  findUnitClauses,
+--  removeDuplicates
+--)
 where
 
 import SATSolver.CNF
@@ -41,16 +46,19 @@ removeLiteral l c
 
 simplifyCNF :: CNF -> ([Literal], CNF)
 simplifyCNF phi = simplifyCNF' phi []
-  where simplifyCNF' phi' vals = let units = removeDuplicates $ findUnitClauses phi'
-                                 in if null units
-                                    then (vals, phi')
-                                    else let vals' = units ++ vals
-                                             phi'' = foldl (\cs u -> mapMaybe (removeLiteral u) cs) phi' units
-                                          in simplifyCNF' phi'' vals'
+  where simplifyCNF' phi' vals = let unitsAndPurLits = units ++ purLits where
+                                        units = removeDuplicates $ findUnitClauses phi'
+                                        purLits = (map (\s -> PosLit s) posPurLit) ++ (map (\s -> NegLit s) negPurLit) where
+                                            (posPurLit, negPurLit) = findPureLiterals phi'
+                                 in if null unitsAndPurLits
+                                        then (vals, phi')
+                                        else let vals' = unitsAndPurLits ++ vals
+                                                 phi'' = foldl (\cs u -> mapMaybe (removeLiteral u) cs) phi' unitsAndPurLits
+                                                    in simplifyCNF' phi'' vals'
 
+-- TODO: instead of this implement a good heuristic like MOM (Maximum Occurrences in clauses of Minimum Size)
 randLiteral :: CNF -> Literal
 randLiteral = head . fromJust . find (not . null)
-
 
 solve :: CNF -> Maybe [Literal]
 solve phi = let (vals', phi') = simplifyCNF phi
