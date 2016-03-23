@@ -7,16 +7,31 @@ where
 import SATSolver.CNF
 import Data.List (delete, find)
 import Data.Maybe (mapMaybe, fromJust)
-import Data.Set (toList, fromList)
+import qualified Data.Set as S
 
 removeDuplicates :: Ord a => [a] -> [a]
-removeDuplicates = toList . fromList
+removeDuplicates = S.toList . S.fromList
 
 findUnitClauses :: CNF -> [Literal]
 findUnitClauses = map head . filter (\c -> length c == 1)
 
--- findPureLiterals :: CNF -> [Literal]
--- findPureLiterals _ = [] -- TODO
+plHelpPos :: Clause -> S.Set String -> S.Set String
+plHelpPos clause a = foldl f1 a clause
+    where f1 acc lit = case lit of
+                        PosLit p -> S.insert p acc
+                        NegLit p -> acc
+
+plHelpNeg :: Clause -> S.Set String -> S.Set String
+plHelpNeg clause b = foldl f2 b clause
+    where f2 acc lit = case lit of
+                        NegLit p -> S.insert p acc
+                        PosLit p -> acc
+
+findPureLiterals :: CNF -> ([String], [String])
+findPureLiterals phi = let inter = S.intersection a b
+                        in (S.toList $ S.difference a inter, S.toList $ S.difference b inter)
+                            where a = foldl (\acc clause -> plHelpPos clause acc) S.empty phi
+                                  b = foldl (\acc clause -> plHelpNeg clause acc) S.empty phi
 
 removeLiteral :: Literal -> Clause -> Maybe Clause
 removeLiteral l c
