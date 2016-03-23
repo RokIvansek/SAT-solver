@@ -32,7 +32,7 @@ checkDimacs fndimacs fnsolution = do
 main :: IO ()
 main = do 
    args <- getArgs
-   case length args of
-        1 -> let (fndimacs:_) = args in solveDimacs fndimacs
-        2 -> let (fndimacs:fnsolution:_) = args in checkDimacs fndimacs fnsolution
+   case args of
+        [fndimacs] -> solveDimacs fndimacs
+        [fndimacs, fnsolution] -> checkDimacs fndimacs fnsolution
         _ -> showHelp
