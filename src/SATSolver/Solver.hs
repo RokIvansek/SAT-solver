@@ -8,6 +8,8 @@ import SATSolver.CNF
 import Data.List (delete, find)
 import Data.Maybe (mapMaybe, fromJust)
 import Data.Set (toList, fromList)
+import Data.Generics.Aliases (orElse)
+import Control.Applicative ((<$>), (<*>))
 
 removeDuplicates :: Ord a => [a] -> [a]
 removeDuplicates = toList . fromList
@@ -44,8 +46,4 @@ solve phi = let (vals', phi') = simplifyCNF phi
                 else if [] `elem` phi'
                 then Nothing
                 else let p = randLiteral phi'
-                      in case solve ([p]:phi') of
-                              Just vals'' -> Just $ vals' ++ vals''
-                              Nothing -> case solve ([negateLit p]:phi') of
-                                              Just vals'' -> Just $ vals' ++ vals''
-                                              Nothing -> Nothing
+                      in (++) <$> Just vals' <*> orElse (solve ([p]:phi')) (solve ([negateLit p]:phi'))
