@@ -21,10 +21,10 @@ findPureLiterals :: CNF -> [Literal]
 findPureLiterals phi = let allLits = concat phi
                            posLits = fromList $ map litName $ filter isPosLit allLits
                            negLits = fromList $ map litName $ filter isNegLit allLits
-                           commonLits = intersection posLits negLits
-                           purePos = map PosLit (toList $ difference posLits commonLits)
-                           pureNeg = map NegLit (toList $ difference negLits commonLits)
-                        in removeDuplicates $ purePos ++ pureNeg
+                           intLits = intersection posLits negLits
+                           purePos = map PosLit (toList $ difference posLits intLits)
+                           pureNeg = map NegLit (toList $ difference negLits intLits)
+                        in purePos ++ pureNeg
 
 removeLiteral :: Literal -> Clause -> Maybe Clause
 removeLiteral l c
@@ -34,14 +34,14 @@ removeLiteral l c
 
 simplifyCNF :: CNF -> ([Literal], CNF)
 simplifyCNF phi = simplifyCNF' phi []
-  where simplifyCNF' phi' vals = let units = findUnitClauses phi'
-                                     pures = findPureLiterals phi'
-                                     toRemove = if null units then pures else units
-                                 in if null toRemove
-                                    then (vals, phi')
-                                    else let vals' = vals ++ toRemove
-                                             phi'' = foldl (\cs u -> mapMaybe (removeLiteral u) cs) phi' toRemove
-                                          in simplifyCNF' phi'' vals'
+  where simplifyCNF' phi' vals' = let units = findUnitClauses phi'
+                                      pures = findPureLiterals phi'
+                                      toRemove = if null units then pures else units
+                                   in if null toRemove
+                                      then (vals', phi')
+                                      else let vals'' = vals' ++ toRemove
+                                               phi'' = foldl (\cs u -> mapMaybe (removeLiteral u) cs) phi' toRemove
+                                            in simplifyCNF' phi'' vals''
 
 -- TODO: instead of this implement a good heuristic like MOM (Maximum Occurrences in clauses of Minimum Size)
 randLiteral :: CNF -> Literal
