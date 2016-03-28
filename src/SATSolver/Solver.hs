@@ -105,7 +105,7 @@ up :: Literal -> CNF -> Int
 up l = length . findUnitClauses . removeLit l
 
 sup :: CNF -> Literal
-sup phi = let topLits = map (\heu -> heu phi) [maxo, moms, mams]
+sup phi = let topLits = map (\heu -> heu phi) [maxo, moms, mams, jw]
               litScores = map (flip up phi) topLits
               (topLit, _) = maximumBy (compare `on` snd) $ zip topLits litScores
            in topLit
