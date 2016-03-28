@@ -25,14 +25,14 @@ spec = do
       findUnitClauses (toClause ["p"]:testCNF) `shouldBe` [PosLit "p"]
       findUnitClauses ([]:testCNF)             `shouldBe` []
 
-  describe "removeLiteral" $ do
+  describe "removeLitFromClause" $ do
     it "should properly remove literals" $ do
-      removeLiteral (PosLit "p") (toClause ["p", "q"])  `shouldBe` Nothing
-      removeLiteral (PosLit "p") (toClause ["-p", "q"]) `shouldBe` Just [PosLit "q"]
-      removeLiteral (PosLit "r") (toClause ["-p", "q"]) `shouldBe` Just [NegLit "p", PosLit "q"]
-      removeLiteral (PosLit "p") (toClause ["-p"])      `shouldBe` Just []
-      removeLiteral (NegLit "p") (toClause ["p"])       `shouldBe` Just []
-      removeLiteral (PosLit "p") (toClause ["p"])       `shouldBe` Nothing
+      removeLitFromClause (PosLit "p") (toClause ["p", "q"])  `shouldBe` Nothing
+      removeLitFromClause (PosLit "p") (toClause ["-p", "q"]) `shouldBe` Just [PosLit "q"]
+      removeLitFromClause (PosLit "r") (toClause ["-p", "q"]) `shouldBe` Just [NegLit "p", PosLit "q"]
+      removeLitFromClause (PosLit "p") (toClause ["-p"])      `shouldBe` Just []
+      removeLitFromClause (NegLit "p") (toClause ["p"])       `shouldBe` Just []
+      removeLitFromClause (PosLit "p") (toClause ["p"])       `shouldBe` Nothing
 
   -- describe "simplifyCNF" $ do
   --   it "should correctly simplify with unit clauses" $ do
@@ -47,3 +47,10 @@ spec = do
       findPureLiterals (toCNF [[], ["r"], ["-q"]])                    `shouldBe` toClause ["r", "-q"]
       findPureLiterals (toCNF [["r", "q"], ["-q", "-r"]])             `shouldBe` toClause []
       findPureLiterals (toCNF [["p"], ["r", "q", "p"], ["-q", "-r"]]) `shouldBe` toClause ["p"]
+
+  describe "MAXO" $ do
+    it "Should return optimal literal by MAXO" $ do
+      maxo (toCNF [["r"], ["r"], ["-q"]]) `shouldBe` PosLit "r"
+      maxo (toCNF [["r"], ["-q"], ["-q", "-r"], ["q"]]) `shouldBe` NegLit "q"
+      maxo (toCNF [["p"]]) `shouldBe` PosLit "p"
+      maxo (toCNF [["p", "p", "p", "q"], ["q"]]) `shouldBe` PosLit "p" -- this is perhaps not ok...
