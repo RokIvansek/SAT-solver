@@ -5,12 +5,13 @@ module SATSolver.Solver
    count,
    maxo,
    moms,
-   mams
+   mams,
+   jw
  )
 where
 
 import SATSolver.CNF
-import Data.List (delete, find, maximumBy)
+import Data.List (delete, find, maximumBy, zipWith, nub)
 import Data.Maybe (mapMaybe, fromJust)
 import Data.Function (on)
 import Data.Set (toList, fromList, intersection, difference)
@@ -89,6 +90,15 @@ mams phi = let minClsSize = minimum $ map length phi
            in if posCount > maxCount - posCount
                then PosLit maxName
                else NegLit maxName
+
+jw :: CNF -> Literal
+jw phi = let lits = map (\xs -> map litName xs) phi
+             litsInClss = map nub lits
+             lengths = map length phi
+             wLitsInClss = zipWith (\xs x -> (map (\y -> (y, 2^^(-x))) xs)) litsInClss lengths
+             jws = Map.toList . Map.fromListWith (+) $ concat wLitsInClss
+             best = maximumBy (compare `on` snd) jws
+         in PosLit $ fst best
 
 up :: Literal -> CNF -> Int
 up l = length . findUnitClauses . removeLit l
