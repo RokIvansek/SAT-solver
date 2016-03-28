@@ -27,7 +27,7 @@ extractClauses :: [String] -> [String]
 extractClauses = filter (\l -> head l /= 'c' && head l /= 'p')
 
 parseClause :: String -> Clause
-parseClause = map readLiteral . init . words
+parseClause = map (readLiteral . read) . init . words
 
 parseClauses :: [String] -> CNF
 parseClauses = map parseClause

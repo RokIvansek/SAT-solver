@@ -17,15 +17,15 @@ where
 import Data.List (intercalate)
 
 
-data Literal = PosLit String
-             | NegLit String
+data Literal = PosLit Int
+             | NegLit Int
              deriving (Eq, Ord)
 type Clause = [Literal]
 type CNF = [Clause]
 
 instance Show Literal where
-  show (PosLit name) = name
-  show (NegLit name) = "-" ++ name
+  show (PosLit name) = show name
+  show (NegLit name) = "-" ++ show name
 
 isPosLit,isNegLit :: Literal -> Bool
 isPosLit (PosLit _) = True
@@ -33,13 +33,13 @@ isPosLit _ = False
 isNegLit (NegLit _) = True
 isNegLit _ = False
 
-litName :: Literal -> String
+litName :: Literal -> Int
 litName (PosLit name) = name
 litName (NegLit name) = name
 
 showLiteral :: Literal -> String
-showLiteral (PosLit name) = name
-showLiteral (NegLit name) = "¬" ++ name
+showLiteral (PosLit name) = show name
+showLiteral (NegLit name) = "¬" ++ show name
 
 showClause :: Clause -> String
 showClause literals = "(" ++ intercalate " ∨ " (map showLiteral literals) ++ ")"
@@ -47,9 +47,9 @@ showClause literals = "(" ++ intercalate " ∨ " (map showLiteral literals) ++ "
 showCNF :: CNF -> String
 showCNF clauses = "[" ++ intercalate " ∧ " (map showClause clauses) ++ "]"
 
-readLiteral :: String -> Literal
-readLiteral atom = if head atom == '-'
-                   then NegLit (tail atom)
+readLiteral :: Int -> Literal
+readLiteral atom = if atom < 0
+                   then NegLit (abs atom)
                    else PosLit atom
 
 
