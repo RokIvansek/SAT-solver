@@ -1,5 +1,5 @@
-n=10;
-workfilename= "10x10queens.txt";
+n=27;
+workfilename= "30x30queens.txt";
 
 workfile = open(workfilename,"w");
 
