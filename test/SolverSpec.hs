@@ -34,7 +34,16 @@ spec = do
       removeLiteral (NegLit "p") (toClause ["p"])       `shouldBe` Just []
       removeLiteral (PosLit "p") (toClause ["p"])       `shouldBe` Nothing
 
-  describe "simplifyCNF" $ do
-    it "should correctly simplify with unit clauses" $ do
-      snd (simplifyCNF (toClause ["r"]:testCNF))  `shouldBe` [[]]
-      simplifyCNF (toClause ["-r"]:testCNF)  `shouldBe` (toClause ["q", "-p", "-r"], [])
+  -- describe "simplifyCNF" $ do
+  --   it "should correctly simplify with unit clauses" $ do
+  --     snd (simplifyCNF (toClause ["r"]:testCNF))  `shouldBe` [[]]
+  --     simplifyCNF (toClause ["-r"]:testCNF)  `shouldBe` (toClause ["q", "-p", "-r"], [])
+  --
+  describe "findPureLiterals" $ do
+    it "should correctly find pure literals" $ do
+      findPureLiterals (toCNF [["r"], ["r"], ["-q"]])                 `shouldBe` toClause ["r", "-q"]
+      findPureLiterals (toCNF [["-r"], ["r"], ["-q"]])                `shouldBe` toClause ["-q"]
+      findPureLiterals (toCNF [[], ["r"], ["-q"]])                    `shouldBe` toClause ["r", "-q"]
+      findPureLiterals (toCNF [[], ["r"], ["-q"]])                    `shouldBe` toClause ["r", "-q"]
+      findPureLiterals (toCNF [["r", "q"], ["-q", "-r"]])             `shouldBe` toClause []
+      findPureLiterals (toCNF [["p"], ["r", "q", "p"], ["-q", "-r"]]) `shouldBe` toClause ["p"]

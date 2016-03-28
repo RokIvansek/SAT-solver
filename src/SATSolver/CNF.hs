@@ -1,6 +1,9 @@
 module SATSolver.CNF
 (
   Literal (..)
+, isPosLit
+, isNegLit
+, litName
 , Clause
 , CNF
 , showCNF
@@ -24,6 +27,15 @@ instance Show Literal where
   show (PosLit name) = name
   show (NegLit name) = "-" ++ name
 
+isPosLit,isNegLit :: Literal -> Bool
+isPosLit (PosLit _) = True
+isPosLit _ = False
+isNegLit (NegLit _) = True
+isNegLit _ = False
+
+litName :: Literal -> String
+litName (PosLit name) = name
+litName (NegLit name) = name
 
 showLiteral :: Literal -> String
 showLiteral (PosLit name) = name
