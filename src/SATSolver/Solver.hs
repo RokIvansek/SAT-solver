@@ -1,7 +1,12 @@
 module SATSolver.Solver
--- (
---   solve
--- )
+ (
+   solve,
+   counts,
+   count,
+   maxo,
+   moms,
+   mams
+ )
 where
 
 import SATSolver.CNF
@@ -69,6 +74,18 @@ moms :: CNF -> Literal
 moms phi = let minLen = minimum $ map length phi
                minClauses = filter (\c -> length c == minLen) phi
             in maxo minClauses
+
+mams :: CNF -> Literal
+mams phi = let minClsSize = minimum $ map length phi
+               minSizeClss = filter (\x -> length x == minClsSize) phi
+               momss = Map.toList . Map.fromListWith (+) $ counts $ map litToString $ concat minSizeClss
+               maxos = counts $ map litToString (concat phi)
+               mamss = Map.toList . Map.fromListWith (+) $ (momss ++ maxos)
+               maxLit = maximumBy (compare `on` snd) mamss
+               (maxName, _) = maxLit
+           in if (head maxName) == '-'
+               then NegLit (tail maxName)
+               else PosLit maxName
 
 up :: Literal -> CNF -> Int
 up l = length . findUnitClauses . removeLit l
