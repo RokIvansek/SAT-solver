@@ -71,8 +71,7 @@ moms phi = let minLen = minimum $ map length phi
             in maxo minClauses
 
 up :: Literal -> CNF -> Int
-up l phi = let phi' = removeLit l phi
-            in length (findUnitClauses phi')
+up l = length . findUnitClauses . removeLit l
 
 randLiteral :: CNF -> Literal
 randLiteral = head . fromJust . find (not . null)
