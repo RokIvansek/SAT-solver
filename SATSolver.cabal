@@ -43,6 +43,7 @@ Test-Suite spec
   Main-Is:              Spec.hs
   Build-Depends:        base
                       , hspec
+                      , containers
 
 Source-Repository head
   Type:                 git

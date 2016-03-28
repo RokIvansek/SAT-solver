@@ -18,25 +18,16 @@ removeDuplicates :: Ord a => [a] -> [a]
 removeDuplicates = S.toList . S.fromList
 
 findUnitClauses :: CNF -> [Literal]
-findUnitClauses = map head . filter (\c -> length c == 1)
+findUnitClauses = removeDuplicates . map head . filter (\c -> length c == 1)
 
-plHelpPos :: Clause -> S.Set String -> S.Set String
-plHelpPos clause a = foldl f1 a clause
-    where f1 acc lit = case lit of
-                        PosLit p -> S.insert p acc
-                        NegLit p -> acc
-
-plHelpNeg :: Clause -> S.Set String -> S.Set String
-plHelpNeg clause b = foldl f2 b clause
-    where f2 acc lit = case lit of
-                        NegLit p -> S.insert p acc
-                        PosLit p -> acc
-
-findPureLiterals :: CNF -> ([String], [String])
-findPureLiterals phi = let inter = S.intersection a b
-                        in (S.toList $ S.difference a inter, S.toList $ S.difference b inter)
-                            where a = foldl (\acc clause -> plHelpPos clause acc) S.empty phi
-                                  b = foldl (\acc clause -> plHelpNeg clause acc) S.empty phi
+findPureLiterals :: CNF -> [Literal]
+findPureLiterals phi = let allLits = concat phi
+                           posLits = S.fromList $ map litName $ filter isPosLit allLits
+                           negLits = S.fromList $ map litName $ filter isNegLit allLits
+                           commonLits = S.intersection posLits negLits
+                           purePos = map PosLit (S.toList $ S.difference posLits commonLits)
+                           pureNeg = map NegLit (S.toList $ S.difference negLits commonLits)
+                        in removeDuplicates $ purePos ++ pureNeg
 
 removeLiteral :: Literal -> Clause -> Maybe Clause
 removeLiteral l c
@@ -46,15 +37,13 @@ removeLiteral l c
 
 simplifyCNF :: CNF -> ([Literal], CNF)
 simplifyCNF phi = simplifyCNF' phi []
-  where simplifyCNF' phi' vals = let unitsAndPurLits = units ++ purLits where
-                                        units = removeDuplicates $ findUnitClauses phi'
-                                        purLits = (map (\s -> PosLit s) posPurLit) ++ (map (\s -> NegLit s) negPurLit) where
-                                            (posPurLit, negPurLit) = findPureLiterals phi'
-                                 in if null unitsAndPurLits
-                                        then (vals, phi')
-                                        else let vals' = unitsAndPurLits ++ vals
-                                                 phi'' = foldl (\cs u -> mapMaybe (removeLiteral u) cs) phi' unitsAndPurLits
-                                                    in simplifyCNF' phi'' vals'
+  where simplifyCNF' phi' vals = let units = findUnitClauses phi'
+                                     pures = findPureLiterals phi'
+                                 in if null units
+                                    then (vals, phi')
+                                    else let vals' = vals ++ units
+                                             phi'' = foldl (\cs u -> mapMaybe (removeLiteral u) cs) phi' units
+                                          in simplifyCNF' phi'' vals'
 
 -- TODO: instead of this implement a good heuristic like MOM (Maximum Occurrences in clauses of Minimum Size)
 randLiteral :: CNF -> Literal
