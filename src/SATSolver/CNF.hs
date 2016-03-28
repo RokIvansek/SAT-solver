@@ -11,7 +11,6 @@ module SATSolver.CNF
 , readLiteral
 , negateLit
 , checkSolution
-, litToString
 )
 where
 
@@ -37,10 +36,6 @@ isNegLit _ = False
 litName :: Literal -> String
 litName (PosLit name) = name
 litName (NegLit name) = name
-
-litToString :: Literal -> String
-litToString (PosLit name) = name
-litToString (NegLit name) = "-" ++ name
 
 showLiteral :: Literal -> String
 showLiteral (PosLit name) = name

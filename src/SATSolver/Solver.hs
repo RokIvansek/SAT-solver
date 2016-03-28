@@ -78,14 +78,17 @@ moms phi = let minLen = minimum $ map length phi
 mams :: CNF -> Literal
 mams phi = let minClsSize = minimum $ map length phi
                minSizeClss = filter (\x -> length x == minClsSize) phi
-               momss = Map.toList . Map.fromListWith (+) $ counts $ map litToString $ concat minSizeClss
-               maxos = counts $ map litToString (concat phi)
+               smallLits = concat minSizeClss
+               momss = Map.toList . Map.fromListWith (+) $ counts $ map litName smallLits
+               allLits = concat phi
+               maxos = counts $ map litName allLits
                mamss = Map.toList . Map.fromListWith (+) $ (momss ++ maxos)
                maxLit = maximumBy (compare `on` snd) mamss
-               (maxName, _) = maxLit
-           in if (head maxName) == '-'
-               then NegLit (tail maxName)
-               else PosLit maxName
+               (maxName, maxCount) = maxLit
+               posCount = (count (PosLit maxName) allLits) + (count (PosLit maxName) smallLits)
+           in if posCount > maxCount - posCount
+               then PosLit maxName
+               else NegLit maxName
 
 up :: Literal -> CNF -> Int
 up l = length . findUnitClauses . removeLit l
