@@ -6,7 +6,8 @@ module SATSolver.Solver
    maxo,
    moms,
    mams,
-   jw
+   jw,
+   sup
  )
 
 where
@@ -81,16 +82,16 @@ mams :: CNF -> Literal
 mams phi = let minClsSize = minimum $ map length phi
                minSizeClss = filter (\x -> length x == minClsSize) phi
                smallLits = concat minSizeClss
-               momss = Map.toList . Map.fromListWith (+) $ counts $ map litName smallLits
+               momss = Map.toList . Map.fromListWith (+) $ counts $ map negateLit smallLits -- Is this negateLit a problem? Creating litterals that are not inside CNF
                allLits = concat phi
-               maxos = counts $ map litName allLits
+               maxos = counts allLits
                mamss = Map.toList . Map.fromListWith (+) $ (momss ++ maxos)
-               maxLit = maximumBy (compare `on` snd) mamss
-               (maxName, maxCount) = maxLit
-               posCount = (count (PosLit maxName) allLits) + (count (PosLit maxName) smallLits)
+               best = maximumBy (compare `on` snd) mamss
+               (maxLit, maxCount) = best
+               posCount = (count maxLit allLits) + (count (negateLit maxLit) smallLits)
            in if posCount > maxCount - posCount
-               then PosLit maxName
-               else NegLit maxName
+               then maxLit
+               else negateLit maxLit
 
 jw :: CNF -> Literal
 jw phi = let lits = map (\xs -> map litName xs) phi
