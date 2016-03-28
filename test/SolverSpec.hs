@@ -54,3 +54,11 @@ spec = do
       maxo (toCNF [["r"], ["-q"], ["-q", "-r"], ["q"]]) `shouldBe` NegLit "q"
       maxo (toCNF [["p"]]) `shouldBe` PosLit "p"
       maxo (toCNF [["p", "p", "p", "q"], ["q"]]) `shouldBe` PosLit "p" -- this is perhaps not ok...
+
+  describe "UP" $ do
+    it "Should return optimal literal by UP" $ do
+      up (PosLit "r") (toCNF [["r"], ["r"], ["-q"]]) `shouldBe` 1
+      up (PosLit "q") (toCNF [["p"], ["-q"], ["-q", "-r"], ["q"]]) `shouldBe` 2
+      up (NegLit "p") (toCNF [["p"], ["-q", "p"], ["-q", "-r"], ["q", "r"]]) `shouldBe` 1
+      -- maxo (toCNF [["p"]]) `shouldBe` PosLit "p"
+      -- maxo (toCNF [["p", "p", "p", "q"], ["q" "r"] [""]]) `shouldBe` PosLit "p"

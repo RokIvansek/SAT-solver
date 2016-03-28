@@ -65,11 +65,14 @@ maxo phi = let literals = concat phi
                then PosLit maxName
                else NegLit maxName
 
-
 moms :: CNF -> Literal
 moms phi = let minLen = minimum $ map length phi
                minClauses = filter (\c -> length c == minLen) phi
             in maxo minClauses
+
+up :: Literal -> CNF -> Int
+up l phi = let phi' = removeLit l phi
+            in length (findUnitClauses phi')
 
 randLiteral :: CNF -> Literal
 randLiteral = head . fromJust . find (not . null)
