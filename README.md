@@ -2,14 +2,27 @@
 Implementation of a SAT solver in Haskell.
 
 # Running
-In order to run, clone the repository, and make sure you have `cabal` installed on your system.
+In order to run, this project uses Cabal to solve dependencies and generate binaries. To compile the binaries, running `cabal build` from the root directory of this project should generate `SATSolver` binary inside `dist/build/SATSolver/` directory.
 
-Navigate to the root directory of the project and run `cabal install` to install the library.
+You can then run the binary by calling it with a single argument, representing the path to the [dimacs](http://www.satcompetition.org/2009/format-benchmarks2009.html) file with formula you wish to solve. This generates either a solution in form of literals, or string "No solution" in case formula is not satisfiable. You can check the obtained solution by saving it into a separate file and invoking the program again with 2 arguments: path to dimacs file with the formula, and path to the file containing the solution. This should produce either "True" if the solution satisfies the formula, and "False" otherwise.
 
-## Testing the library
-In order to test the library via the repl, run `cabal repl` from the root directory of the project.
+Note that the current implementation expects a "nicely" formated dimacs file on the input: each line not starting with `c` or `p` is assumed to represent a separate clause in the formula, meaning each clause should be placed on its own line, ending with `␣0\n`, and no line should be empty.
 
-## Running unit tests
-If your cabal's package list is not up to date, run `cabal update`, and then install hspec by running `cabal install hspec`.
+# Example
+As an example, to find the solution to a problem in [test/dimac/example.txt](test/dimac/example.txt), you would use:
 
-After you have hspec installed, you can run `cabal test` from inside root directory of the project which should run all the tests from [test/](./test/) directory.
+    $ ./dist/build/SATSolver/SATSolver test/dimac/example.txt
+    4 -3
+
+meaning positive value for literal 4 and negative value for literal 3 represent a solution to the input. You can test this solution by running
+
+    $ ./dist/build/SATSolver/SATSolver test/dimac/example.txt > solution
+    $ ./dist/build/SATSolver/SATSolver test/dimac/example.txt solution
+    Checking solution for [(1 ∨ ¬5 ∨ 4) ∧ (¬1 ∨ 5 ∨ 3 ∨ 4) ∧ (¬3 ∨ ¬4)]
+    With [4,-3]
+    Result: True
+
+meaning our solution does in fact satisfy the formula.
+
+# Details
+This is a very basic SAT solver using DPLL algorithm. When the algorithm encounters the branching (guessing) step, it uses the so called SUP heuristics (using MAXO, MOMS, MAMS, JW and UP heuristics under the hood) to determine the optimal free literal to branch on next. The heuristic is described in greater detail in the paper [Learning to Select Branching Rules in the DPLL Procedure for Satisfiability](https://www.cs.duke.edu/research/AI/RLSAT/sat2001.pdf) by Lagoudakis and Littman.
