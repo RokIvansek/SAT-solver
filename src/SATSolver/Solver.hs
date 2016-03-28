@@ -1,12 +1,12 @@
 module SATSolver.Solver
- (
-   solve,
-   counts,
-   count,
-   maxo,
-   moms,
-   mams
- )
+--  (
+--    solve,
+--    counts,
+--    count,
+--    maxo,
+--    moms,
+--    mams
+--  )
 where
 
 import SATSolver.CNF
@@ -93,8 +93,11 @@ mams phi = let minClsSize = minimum $ map length phi
 up :: Literal -> CNF -> Int
 up l = length . findUnitClauses . removeLit l
 
-randLiteral :: CNF -> Literal
-randLiteral = head . fromJust . find (not . null)
+sup :: CNF -> Literal
+sup phi = let topLits = map (\heu -> heu phi) [maxo, moms, mams]
+              litScores = map (flip up phi) topLits
+              (topLit, _) = maximumBy (compare `on` snd) $ zip topLits litScores
+           in topLit
 
 solve :: CNF -> Maybe [Literal]
 solve phi = let (vals', phi') = simplifyCNF phi
@@ -102,5 +105,5 @@ solve phi = let (vals', phi') = simplifyCNF phi
                 then Just vals'
                 else if [] `elem` phi'
                 then Nothing
-                else let p = randLiteral phi'
+                else let p = sup phi'
                       in (++) <$> Just vals' <*> orElse (solve ([p]:phi')) (solve ([negateLit p]:phi'))
