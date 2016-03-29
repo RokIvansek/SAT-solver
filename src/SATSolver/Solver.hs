@@ -82,7 +82,7 @@ mams :: CNF -> Literal
 mams phi = let minClsSize = minimum $ map length phi
                minSizeClss = filter (\x -> length x == minClsSize) phi
                smallLits = concat minSizeClss
-               momss = Map.toList . Map.fromListWith (+) $ counts $ map negateLit smallLits -- Is this negateLit a problem? Creating litterals that are not inside CNF
+               momss = Map.toList . Map.fromListWith (+) $ counts $ map negateLit smallLits
                allLits = concat phi
                maxos = counts allLits
                mamss = Map.toList . Map.fromListWith (+) $ (momss ++ maxos)
@@ -99,8 +99,14 @@ jw phi = let lits = map (\xs -> map litName xs) phi
              lengths = map length phi
              wLitsInClss = zipWith (\xs x -> (map (\y -> (y, 2^^(-x))) xs)) litsInClss lengths
              jws = Map.toList . Map.fromListWith (+) $ concat wLitsInClss
-             best = maximumBy (compare `on` snd) jws
-         in PosLit $ fst best
+             maxLit = maximumBy (compare `on` snd) jws
+             (maxName, maxCount) = maxLit
+             posClss = filter (\xs -> (PosLit maxName) `elem` xs) phi
+             lenPos = map length posClss
+             posCount = foldl (\acc x -> acc + 2^^(-x)) 0 lenPos
+         in if posCount > maxCount - posCount
+             then PosLit maxName
+             else NegLit maxName
 
 up :: Literal -> CNF -> Int
 up l = length . findUnitClauses . removeLit l
