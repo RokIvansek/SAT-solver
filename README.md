@@ -24,5 +24,11 @@ meaning positive value for literal 4 and negative value for literal 3 represent 
 
 meaning our solution does in fact satisfy the formula.
 
+# Testing
+We tested our SAT solver on different dimac files. Some of them can be found in test/dimac folder. In addition to that we wrote a script that generates a .dimac file for the famous "queens" problem of specifiyed size.
+The python script for queens along with some test examples can be found in test/queens folder.
+
+For the ONE example we chose the "19x19queens.txt" file. It represents a formula with 361 variables and 10735 clauses. The solver finds the solution in cca 20 seconds. 
+
 # Details
 This is a very basic SAT solver using DPLL algorithm. When the algorithm encounters the branching (guessing) step, it uses the so called SUP heuristics (using MAXO, MOMS, MAMS, JW and UP heuristics under the hood) to determine the optimal free literal to branch on next. The heuristic is described in greater detail in the paper [Learning to Select Branching Rules in the DPLL Procedure for Satisfiability](https://www.cs.duke.edu/research/AI/RLSAT/sat2001.pdf) by Lagoudakis and Littman.
