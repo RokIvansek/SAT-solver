@@ -4,7 +4,7 @@ workfilename= "19x19queens.txt";
 workfile = open(workfilename,"w");
 
 
-line="c "+str(n)+"-queens puzzle: The "+str(n)+" queens puzzle is the problem of placing "+str(n)+" chess \nc queens on an "+str(n)+"×"+str(n)+" chessboard so that no two queens threaten each other. \nc Thus, a solution requires that no two queens share the same row, column, or diagonal.\nc \n";
+line="c "+str(n)+"-queens puzzle: The "+str(n)+" queens puzzle is the problem of placing "+str(n)+" chess \nc queens on an "+str(n)+"x"+str(n)+" chessboard so that no two queens threaten each other. \nc Thus, a solution requires that no two queens share the same row, column, or diagonal.\nc \n";
 workfile.write(line); 
 
 clauses = []
